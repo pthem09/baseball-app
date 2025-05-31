@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Stats</title>
+</head>
+<body>
+    <h1>Choose a baseball team</h1>
+    <form method="get">
+        <select name="team" id="team">
+            <option value="{{ selected_team.data.id }}">
+                {{ selected_team.data.display_name }}
+            </option>
+            {% for team in teams.data %}
+                    {% if team.id != selected_team.data.id %}
+                        <option value="{{ team.id }}">
+                            {{ team.display_name }}
+                        </option>
+                    {% endif %}
+            {% endfor %}
+        </select>
+        <button>Select team</button>
+    </form>
+        {% for player in players.data %}
+            <li>
+                {{ player.last_name }}, {{ player.first_name }}
+            </li>
+        {% endfor %}
+    
+    {% if next_cursor %}
+        <a href="?cursor={{ next_cursor }}">Next page</a>
+    {% endif %}
+
+</body>
+</html>
