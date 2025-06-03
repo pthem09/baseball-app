@@ -20,16 +20,19 @@ def index(request):
         request.session.modified = True
 
     if direction == 'prev':
-        if len(request.session['cursors']) > 1:
+        if request.session['cursors']:
             request.session['cursors'].pop()
             request.session.modified = True
-            prev_cursor = request.session['cursors'][-1]
-            if prev_cursor is None:
-                players = api.mlb.players.list(team_ids=[id])
-            else:
+            if request.session['cursors']:
+                prev_cursor = request.session['cursors'][-1]
                 players = api.mlb.players.list(
                     team_ids=[id],
                     cursor=prev_cursor
+                )
+            else:
+                prev_cursor = None
+                players = api.mlb.players.list(
+                    team_ids=[id]
                 )
         else:
             players = api.mlb.players.list(team_ids=[id])
@@ -49,11 +52,15 @@ def index(request):
         next_cursor = None
 
     selected_team = api.mlb.teams.get(id)
+    print(request.session['cursors'])
+    print(selected_team.data.id)
     context = {
         'teams': teams,
         'players': players,
         'selected_team': selected_team,
+        'team_id': selected_team.data.id,
         'next_cursor': next_cursor,
         'prev_cursor': prev_cursor,
     }
+
     return render(request, 'stats/template.html', context)

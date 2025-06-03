@@ -9,11 +9,11 @@
     <h1>Choose a baseball team</h1>
     <form method="get">
         <select name="team" id="team">
-            <option value="{{ selected_team.data.id }}">
+            <option value="{{ team_id }}">
                 {{ selected_team.data.display_name }}
             </option>
             {% for team in teams.data %}
-                    {% if team.id != selected_team.data.id %}
+                    {% if team.id != team_id %}
                         <option value="{{ team.id }}">
                             {{ team.display_name }}
                         </option>
@@ -28,15 +28,19 @@
             </li>
         {% endfor %}
 
-    {% if request.session.cursors %}
-        {% if prev_cursor is None %}
-            <a href="?">Previous page</a>
-        {% else %}
-            <a href="?cursor={{ prev_cursor }}">Previous page</a>
+    {% if team_id is None %}
+        <a href="?team=1">Next page</a>
+    {% else %}
+        {% if request.session.cursors %}
+            {% if prev_cursor is None %}
+                <a href="?team={{ team_id }}&direction=prev">Previous page</a>
+            {% else %}
+                <a href="?team={{ team_id }}&cursor={{ prev_cursor }}&direction=prev">Previous page</a>
+            {% endif %}
         {% endif %}
-    {% endif %}
-    {% if next_cursor %}
-        <a href="?cursor={{ next_cursor }}">Next page</a>
+        {% if next_cursor %}
+            <a href="?team={{ team_id }}&cursor={{ next_cursor }}">Next page</a>
+        {% endif %}
     {% endif %}
 
 </body>
