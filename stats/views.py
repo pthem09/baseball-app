@@ -10,16 +10,50 @@ def index(request):
         id = request.GET['team']
     else:
         id = 1
+
     cursor = request.GET.get('cursor')
-    if cursor:
-        players = api.mlb.players.list(team_ids=[id], cursor=cursor)
+    direction = request.GET.get('direction')
+    prev_cursor = None
+
+    if 'cursors' not in request.session:
+        request.session['cursors'] = []
+        request.session.modified = True
+
+    if direction == 'prev':
+        if len(request.session['cursors']) > 1:
+            request.session['cursors'].pop()
+            request.session.modified = True
+            prev_cursor = request.session['cursors'][-1]
+            if prev_cursor is None:
+                players = api.mlb.players.list(team_ids=[id])
+            else:
+                players = api.mlb.players.list(
+                    team_ids=[id],
+                    cursor=prev_cursor
+                )
+        else:
+            players = api.mlb.players.list(team_ids=[id])
     else:
-        players = api.mlb.players.list(team_ids=[id])
+        if cursor:
+            request.session['cursors'].append(cursor)
+            request.session.modified = True
+            players = api.mlb.players.list(team_ids=[id], cursor=cursor)
+        else:
+            players = api.mlb.players.list(team_ids=[id])
+            request.session['cursors'] = []
+            request.session.modified = True
+
+    if hasattr(players.meta, 'next_cursor'):
+        next_cursor = players.meta.next_cursor
+    else:
+        next_cursor = None
+
     selected_team = api.mlb.teams.get(id)
     context = {
         'teams': teams,
         'players': players,
         'selected_team': selected_team,
-        'next_cursor': players.meta.next_cursor,
+        'next_cursor': next_cursor,
+        'prev_cursor': prev_cursor,
     }
     return render(request, 'stats/template.html', context)

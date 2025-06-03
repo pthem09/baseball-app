@@ -27,7 +27,14 @@
                 {{ player.last_name }}, {{ player.first_name }}
             </li>
         {% endfor %}
-    
+
+    {% if request.session.cursors %}
+        {% if prev_cursor is None %}
+            <a href="?">Previous page</a>
+        {% else %}
+            <a href="?cursor={{ prev_cursor }}">Previous page</a>
+        {% endif %}
+    {% endif %}
     {% if next_cursor %}
         <a href="?cursor={{ next_cursor }}">Next page</a>
     {% endif %}
