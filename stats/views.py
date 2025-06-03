@@ -52,8 +52,6 @@ def index(request):
         next_cursor = None
 
     selected_team = api.mlb.teams.get(id)
-    print(request.session['cursors'])
-    print(selected_team.data.id)
     context = {
         'teams': teams,
         'players': players,
