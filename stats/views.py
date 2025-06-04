@@ -79,6 +79,10 @@ def player(request):
     player_id = request.GET.get('player')
     player = api.mlb.players.get(player_id)
     dob_time = datetime.strptime(player.data.dob, "%d/%m/%Y")
+    if player.data.debut_year:
+        debut_yr = int(player.data.debut_year)
+    else:
+        debut_yr = 'n/a'
     day = dob_time.strftime("%A")
     month_name = str(dob_time.strftime("%B"))
     day_num = str(int(dob_time.strftime("%d")))
@@ -87,7 +91,7 @@ def player(request):
     context = {
         'player': player,
         'dob_formatted': dob_formatted,
-        'debut_yr_int': int(player.data.debut_year),
+        'debut_yr_int': debut_yr,
         'bats': player.data.bats_throws.split("/")[0],
         'throws': player.data.bats_throws.split("/")[1],
     }
