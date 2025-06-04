@@ -21,12 +21,12 @@
             {% endfor %}
         </select>
         <button>Select team</button>
-    </form>
-        {% for player in players.data %}
-            <li>
-                {{ player.last_name }}, {{ player.first_name }}
-            </li>
-        {% endfor %}
+
+    {% for player in players.data %}
+        <li>
+            {{ player.last_name }}, {{ player.first_name }}
+        </li>
+    {% endfor %}
 
     {% if team_id is None %}
         <a href="?team=1">Next page</a>
@@ -42,6 +42,8 @@
             <a href="?team={{ team_id }}&cursor={{ next_cursor }}">Next page</a>
         {% endif %}
     {% endif %}
+
+    </form>
 
 </body>
 </html>

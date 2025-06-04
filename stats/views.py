@@ -13,7 +13,6 @@ def index(request):
 
     cursor = request.GET.get('cursor')
     direction = request.GET.get('direction')
-    prev_cursor = None
 
     if 'cursors' not in request.session:
         request.session['cursors'] = []
@@ -23,22 +22,31 @@ def index(request):
         if request.session['cursors']:
             request.session['cursors'].pop()
             request.session.modified = True
-            if request.session['cursors']:
-                prev_cursor = request.session['cursors'][-1]
+            if request.session['prev_cursor']:
                 players = api.mlb.players.list(
                     team_ids=[id],
-                    cursor=prev_cursor
+                    cursor=request.session['prev_cursor']
                 )
             else:
-                prev_cursor = None
                 players = api.mlb.players.list(
                     team_ids=[id]
                 )
+            if len(request.session['cursors']) > 1:
+                request.session['prev_cursor'] = request.session['cursors'][-2]
+                request.session.modified = True
+            else:
+                request.session['prev_cursor'] = None
+                request.session.modified = True
         else:
             players = api.mlb.players.list(team_ids=[id])
     else:
         if cursor:
             request.session['cursors'].append(cursor)
+            request.session.modified = True
+            if len(request.session['cursors']) > 1:
+                request.session['prev_cursor'] = request.session['cursors'][-2]
+            else:
+                request.session['prev_cursor'] = None
             request.session.modified = True
             players = api.mlb.players.list(team_ids=[id], cursor=cursor)
         else:
@@ -52,13 +60,15 @@ def index(request):
         next_cursor = None
 
     selected_team = api.mlb.teams.get(id)
+    request.session.modified = True
+
     context = {
         'teams': teams,
         'players': players,
         'selected_team': selected_team,
         'team_id': selected_team.data.id,
         'next_cursor': next_cursor,
-        'prev_cursor': prev_cursor,
+        'prev_cursor': request.session['prev_cursor'],
     }
 
     return render(request, 'stats/template.html', context)
