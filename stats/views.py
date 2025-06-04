@@ -23,6 +23,9 @@ def teams(request):
     if 'cursors' not in request.session:
         request.session['cursors'] = []
         request.session.modified = True
+    if 'prev_cursor' not in request.session:
+        request.session['prev_cursor'] = None
+        request.session.modified = True
 
     if direction == 'prev':
         if request.session['cursors']:
