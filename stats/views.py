@@ -3,11 +3,15 @@ from balldontlie import BalldontlieAPI
 from datetime import datetime
 
 api = BalldontlieAPI(api_key="24cfe1d1-3f67-4778-8c53-fbb8e77e2016")
-teams = api.mlb.teams.list()
+all_teams = api.mlb.teams.list()
 per_page_option = 50
 
 
 def index(request):
+    return render(request, 'stats/index.html')
+
+
+def teams(request):
     if request.method == 'GET' and 'team' in request.GET:
         id = request.GET['team']
     else:
@@ -77,7 +81,7 @@ def index(request):
     request.session.modified = True
 
     context = {
-        'teams': teams,
+        'teams': all_teams,
         'players': players,
         'selected_team': selected_team,
         'team_id': selected_team.data.id,
@@ -85,7 +89,7 @@ def index(request):
         'prev_cursor': request.session['prev_cursor'],
     }
 
-    return render(request, 'stats/template.html', context)
+    return render(request, 'stats/teams.html', context)
 
 
 def player(request):
@@ -109,3 +113,7 @@ def player(request):
         'throws': player.data.bats_throws.split("/")[1],
     }
     return render(request, 'stats/player.html', context)
+
+
+def games(request):
+    return render(request, "stats/games.html")
