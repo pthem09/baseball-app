@@ -4,6 +4,7 @@ from datetime import datetime
 
 api = BalldontlieAPI(api_key="24cfe1d1-3f67-4778-8c53-fbb8e77e2016")
 teams = api.mlb.teams.list()
+per_page_option = 50
 
 
 def index(request):
@@ -26,11 +27,13 @@ def index(request):
             if request.session['prev_cursor']:
                 players = api.mlb.players.list(
                     team_ids=[id],
-                    cursor=request.session['prev_cursor']
+                    cursor=request.session['prev_cursor'],
+                    per_page=per_page_option
                 )
             else:
                 players = api.mlb.players.list(
-                    team_ids=[id]
+                    team_ids=[id],
+                    per_page=per_page_option
                 )
             if len(request.session['cursors']) > 1:
                 request.session['prev_cursor'] = request.session['cursors'][-2]
@@ -39,7 +42,10 @@ def index(request):
                 request.session['prev_cursor'] = None
                 request.session.modified = True
         else:
-            players = api.mlb.players.list(team_ids=[id])
+            players = api.mlb.players.list(
+                team_ids=[id],
+                per_page=per_page_option
+            )
     else:
         if cursor:
             request.session['cursors'].append(cursor)
@@ -49,9 +55,16 @@ def index(request):
             else:
                 request.session['prev_cursor'] = None
             request.session.modified = True
-            players = api.mlb.players.list(team_ids=[id], cursor=cursor)
+            players = api.mlb.players.list(
+                        team_ids=[id],
+                        cursor=cursor,
+                        per_page=per_page_option
+                    )
         else:
-            players = api.mlb.players.list(team_ids=[id])
+            players = api.mlb.players.list(
+                        team_ids=[id],
+                        per_page=per_page_option
+                    )
             request.session['cursors'] = []
             request.session.modified = True
 
