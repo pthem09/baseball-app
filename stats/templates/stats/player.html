@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ player.data.full_name }}</title>
+</head>
+<body>
+    <h1>{{ player.data.full_name }}</h1>
+    <h2>{{ player.data.position }}, {{ player.data.team.display_name }}</h2>
+    <h3>#{{ player.data.jersey }}</h3>
+    <p>
+        {% if player.data.active %}
+            Active
+        {% else %}
+            Retired
+        {% endif %}
+    </p>
+    <p>Born {{ dob_formatted }} in {{ player.data.birth_place }}</p>
+    <p>Debut year: {{ debut_yr_int }}</p>
+    <p>Height: {{ player.data.height }}</p>
+    <p>Weight: {{ player.data.weight }}</p>
+    <p>Bats: {{ bats }}</p>
+    <p>Throws: {{ throws }}</p>
+</body>
+</html>

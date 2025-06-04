@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from balldontlie import BalldontlieAPI
+from datetime import datetime
 
 api = BalldontlieAPI(api_key="24cfe1d1-3f67-4778-8c53-fbb8e77e2016")
 teams = api.mlb.teams.list()
@@ -72,3 +73,22 @@ def index(request):
     }
 
     return render(request, 'stats/template.html', context)
+
+
+def player(request):
+    player_id = request.GET.get('player')
+    player = api.mlb.players.get(player_id)
+    dob_time = datetime.strptime(player.data.dob, "%d/%m/%Y")
+    day = dob_time.strftime("%A")
+    month_name = str(dob_time.strftime("%B"))
+    day_num = str(int(dob_time.strftime("%d")))
+    yr_num = str(dob_time.strftime("%Y"))
+    dob_formatted = day + ', ' + month_name + ' ' + day_num + ', ' + yr_num
+    context = {
+        'player': player,
+        'dob_formatted': dob_formatted,
+        'debut_yr_int': int(player.data.debut_year),
+        'bats': player.data.bats_throws.split("/")[0],
+        'throws': player.data.bats_throws.split("/")[1],
+    }
+    return render(request, 'stats/player.html', context)

@@ -23,9 +23,9 @@
         <button>Select team</button>
 
     {% for player in players.data %}
-        <li>
+        <li><a href="/player/?player={{ player.id }}">
             {{ player.last_name }}, {{ player.first_name }}
-        </li>
+        </a></li>
     {% endfor %}
 
     {% if team_id is None %}
